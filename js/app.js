@@ -72,6 +72,22 @@ function checkLetter(buttonClicked) {
     return letterFound ? letterChosen : null;
 }
 
+// Check to see if player wins or loses
+function checkWin() {
+    if (letter.length === show.length) {
+        overlay.classList.add('win');
+        overlay.style.display = '';
+        title.textContent = "You win!"
+        startGame.textContent = "Play Again"
+    }
+
+    if (missed >= 5) {
+        overlay.classList.add('lose');
+        overlay.style.display = '';
+        title.textContent = "Sorry, try again!"
+        startGame.textContent = "Play Again"
+    }
+}
 
 window.addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON') {
@@ -91,23 +107,6 @@ window.addEventListener('click', (e) => {
     }
     checkWin();
 });
-
-// Check to see if player wins or loses
-function checkWin() {
-    if (letter.length === show.length) {
-        overlay.classList.add('win');
-        overlay.style.display = '';
-        title.textContent = "You win!"
-        startGame.textContent = "Play Again"
-    }
-
-    if (missed >= 5) {
-        overlay.classList.add('lose');
-        overlay.style.display = '';
-        title.textContent = "Sorry, try again!"
-        startGame.textContent = "Play Again"
-    }
-}
 
 startGame.addEventListener('click', (e) => {
     if (e.target.textContent === 'Play Again') {
