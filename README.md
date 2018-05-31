@@ -1,1 +1,3 @@
-# techdegree-project-7
+Techdegree Project 7
+
+Game Show App
