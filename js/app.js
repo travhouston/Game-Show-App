@@ -1,93 +1,87 @@
 // General Variables
 let missed = 0;
 const qwerty = document.querySelector('#qwerty');
-const phrase = document.querySelector('#phrase');
-const phraseUl = phrase.querySelector('ul');
-const title = document.querySelector('.title');
-const show = document.getElementsByClassName('show');
-const startGame = document.querySelector('.btn__reset');
 const overlay = document.querySelector('#overlay');
-const letter = document.getElementsByClassName('letter');
-const letterButtons = qwerty.querySelectorAll('button');
-const scoreboard = document.querySelector('#scoreboard');
-const scoreboardListItem = scoreboard.querySelectorAll('.tries');
+const qwertyLetters = document.querySelectorAll('#qwerty button');
+const startGame = document.querySelector('.btn__reset');
+const phrase = document.querySelector('#phrase ul');
+const ul = document.querySelectorAll('ul');
+const showLetter = document.getElementsByClassName('show');
+const rightLetter = document.getElementsByClassName('letter');
+const tries = document.querySelectorAll('.tries');
+const title = document.querySelector('h2');
+
+
 
 // Phrases Variable
 const phrases = [
-    'The first rule of Fight Club is you do not talk about Fight Club',
-    'May the Force be with you',
-    'Why so serious',
-    'I see dead people',
-    'You complete me',
-    'You had me at hello',
-    'Show me the money',
-    'I love the smell of napalm in the morning',
-    'It was Beauty killed the Beast',
+    'MAY THE FORCE BE WITH YOU',
+    'WHY SO SERIOUS',
+    'I SEE DEAD PEOPLE',
+    'YOU COMPLETE ME',
+    'YOU HAD ME AT HELLO',
+    'SHOW ME THE MONEY',
+    'IT WAS BEAUTY KILLED THE BEAST',
+    'THIS IS THE BEGINNING OF A BEAUTIFUL FRIENDSHIP',
+    'TO INFINITY AND BEYOND',
+    'SAY HELLO TO MY LITTLE FRIEND',
+    'JUST KEEP SWIMMING',
+    'THE DUDE ABIDES',
+    "MY PRECIOUS"
   ];
 
-// Start Game, remove Overlay Screen
+// Start Game, Remove Overlay Screen
 startGame.addEventListener('click', () => {
     overlay.style.display = 'none';
 });
 
-// Random choose phrase
-function getRandomPhraseAsArray(array) {
-    const randomPhrase = array[Math.floor(Math.random() * array.length)];
-    return randomPhrase.toUpperCase().split('');
-}
+// Random Phrase
+function getRandomPhraseArray(arr){
+    const splitArray = arr[Math.floor(Math.random() * arr.length)].split('');
+    return splitArray;
+} 
 
-// Function that adds random phrase then creates list item for each letter
-function addPhraseToDisplay(array) {   
-    for (let i = 0; i < array.length; i++) {
+// Set Game Display
+const phraseArray = getRandomPhraseArray(phrases);
+
+function addPhraseToDisplay(arr){
+    for (let i = 0; i < arr.length; i++) {
         const listItem = document.createElement('li');
-        phraseUl.appendChild(listItem);
-        listItem.textContent = array[i];
-    
-        if (array[i] !== ' ') {
-            listItem.className = 'letter';
-        } else {
+        const phraseLetters = document.createTextNode(arr[i]);
+        listItem.appendChild(phraseLetters);
+
+        if (listItem.innerText.indexOf(' ') >= 0) {
             listItem.className = 'space';
+            ul[0].appendChild(listItem);
+      
+        } else {
+            listItem.className = 'letter';
+            ul[0].appendChild(listItem);
         }
     }
 }
+// Call New Phrase Function
+addPhraseToDisplay(phraseArray); 
 
-// Passes info to new variable
-const phraseArray = getRandomPhraseAsArray(phrases);
-
-// Call Random Phrase function
-addPhraseToDisplay(phraseArray);
-
-// Checks clicked letter to random phrase
-function checkLetter(buttonClicked) {
-    const letterChosen = buttonClicked.textContent.toUpperCase();
-    let letterFound = false;
-
-    for (let i = 0; i < letter.length; i++){
-        if (letterChosen === letter[i].textContent) {
-            letter[i].classList.add('show');
-            letterFound = true;
-        } 
+// Check Letter Function
+function checkLetter(button) {
+    let chosenLetter = false;
+    for (let i = 0; i < rightLetter.length; i++) {
+        if (button.textContent.toUpperCase() === rightLetter[i].textContent.toUpperCase()) {
+            rightLetter[i].classList.add('show');
+            chosenLetter = true;
+            console.log(chosenLetter);
+        }
     }
-    
-    return letterFound ? letterChosen : null;
-}
-
-// Check to see if player wins or loses
-function checkWin() {
-    if (letter.length === show.length) {
-        overlay.classList.add('win');
-        overlay.style.display = '';
-        title.textContent = "You win!"
-        startGame.textContent = "Play Again"
+    if (chosenLetter == true) {
+        return button.textContent.toUpperCase();
+        
+    } else {
+        return null;
     }
-
-    if (missed >= 5) {
-        overlay.classList.add('lose');
-        overlay.style.display = '';
-        title.textContent = "Sorry, try again!"
-        startGame.textContent = "Play Again"
-    }
-}
+  };
+  
+// Add Event Listener
 
 window.addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON') {
@@ -95,48 +89,64 @@ window.addEventListener('click', (e) => {
         e.target.disabled = true;
 
         const letterFound = checkLetter(e.target);
+        console.log(letterFound);
 
         if (letterFound === null) {
             missed += 1;
+            tries[tries.length-missed].querySelectorAll('img')[0].src = "images/lostHeart.png";
+            console.log(missed);
         }
-
-        if (missed >= 1 && missed <= 5){
-            const heart = scoreboardListItem[scoreboardListItem.length-missed];
-            heart.getElementsByTagName('img')[0].src = 'images/lostHeart.png';
-        }
+    checkWin()      
     }
-    checkWin();
 });
 
+// Check Win function
+
+function checkWin() {
+
+    if (missed === 5) {
+        overlay.className = 'lose';
+        overlay.style.display = '';
+        title.textContent = 'You Lose!';
+        startGame.textContent = 'Try Again';
+      }
+    
+    if (rightLetter.length === showLetter.length){
+        overlay.className = 'win';
+        overlay.style.display = '';
+        title.textContent = 'You Win!';
+        startGame.textContent = 'Play Again';
+    } 
+}
+
+// Reset Game
+
 startGame.addEventListener('click', (e) => {
-    if (e.target.textContent === 'Play Again') {
-        // set missed to 0
+    if (e.target.textContent === "Try Again" || e.target.textContent === "Play Again") {
+
+        // Remove Overlay
+        overlay.style.display = 'none';
+
+        // Remove List Item Letters
+        while (phrase.firstChild) {
+            phrase.removeChild(phrase.firstChild);
+        }
+
+        //Reset Keyboard Letters
+        for (let i = 0; i < qwertyLetters.length; i++) {
+            qwertyLetters[i].disabled = false;
+            qwertyLetters[i].classList.remove('chosen');
+        }
+
+        // Reset Heart Count
         missed = 0;
-
-        // reset heart counter
-        for (let i = 0; i < scoreboardListItem.length; i++) {
-            const img = scoreboardListItem[i].getElementsByTagName('img')[0];
-            img.src = 'images/liveHeart.png';
+        for (let i = 0; i < tries.length; i++) {
+            tries[i].querySelectorAll('img')[0].src = 'images/liveHeart.png';
         }
 
-        // remove list items
-        while (phraseUl.children.length > 0) {
-            phraseUl.removeChild(phraseUl.children[0]);
-        }
-
-        // remove chosen buttons
-        for (let i = 0; i < letterButtons.length; i++) {
-            letterButtons[i].classList.remove('chosen');
-            letterButtons[i].disabled = false;
-        }
-
-        // reset overlay
-        overlay.classList.remove('win', 'lose');
-
-        // generate new random phrase
-        const newPhrase = getRandomPhraseAsArray(phrases);
-
-        // add new list items
+        // Pick New Phrase
+        const newPhrase = getRandomPhraseArray(phrases);
         addPhraseToDisplay(newPhrase);
+        
     }
 });
